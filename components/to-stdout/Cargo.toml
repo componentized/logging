@@ -1,0 +1,12 @@
+[package]
+name = "to-stdout"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+chrono = { git = "https://github.com/chronotope/chrono.git", branch = "0.5.x" }
+wit-bindgen = { workspace = true }

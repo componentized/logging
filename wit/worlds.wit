@@ -2,7 +2,7 @@ package componentized:logging;
 
 world levels {
     import wasi:logging/logging@0.1.0-draft;
-    import wasi:config/store@0.2.0-draft;
+    import wasi:config/store@0.2.0-rc.1;
     export wasi:logging/logging@0.1.0-draft;
 }
 

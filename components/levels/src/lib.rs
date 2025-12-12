@@ -111,6 +111,7 @@ fn level_map(level: Level) -> logging::Level {
 wit_bindgen::generate!({
     path: "../../wit",
     world: "levels",
+    features: ["clocks-timezone"],
     generate_all
 });
 

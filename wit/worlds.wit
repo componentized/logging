@@ -7,7 +7,7 @@ world levels {
 }
 
 world to-stdout {
-    import wasi:cli/stdout@0.2.3;
-    import wasi:clocks/wall-clock@0.2.3;
+    import wasi:cli/stdout@0.2.6;
+    import wasi:clocks/wall-clock@0.2.6;
     export wasi:logging/logging@0.1.0-draft;
 }

@@ -20,13 +20,13 @@ components: $(foreach component,$(COMPONENTS),lib/$(component).wasm $(foreach co
 define BUILD_COMPONENT
 
 lib/$1.wasm: Cargo.toml Cargo.lock wit/deps $(shell find components/$1 -type f)
-	cargo component build -p $1 --target wasm32-unknown-unknown --release
-	cp target/wasm32-unknown-unknown/release/$(subst -,_,$1).wasm lib/$1.wasm
+	cargo build -p $1 --target wasm32-unknown-unknown --release
+	wasm-tools component new target/wasm32-unknown-unknown/release/$(subst -,_,$1).wasm -o lib/$1.wasm
 	cp components/$1/README.md lib/$1.wasm.md
 
 lib/$1.debug.wasm: Cargo.toml Cargo.lock wit/deps $(shell find components/$1 -type f)
-	cargo component build -p $1 --target wasm32-wasip2
-	cp target/wasm32-wasip2/debug/$(subst -,_,$1).wasm lib/$1.debug.wasm
+	cargo build -p $1 --target wasm32-unknown-unknown
+	wasm-tools component new target/wasm32-unknown-unknown/debug/$(subst -,_,$1).wasm -o lib/$1.debug.wasm
 	cp components/$1/README.md lib/$1.debug.wasm.md
 
 endef
@@ -57,12 +57,20 @@ endif
 	@$(eval REVISION := $(shell git rev-parse HEAD)$(shell git diff --quiet HEAD && echo "+dirty"))
 	@$(eval TAG := $(shell echo "${VERSION}" | sed 's/[^a-zA-Z0-9_.\-]/--/g'))
 
-	wkg oci push \
-        --annotation "org.opencontainers.image.title=${COMPONENT}" \
-        --annotation "org.opencontainers.image.description=${DESCRIPTION}" \
-        --annotation "org.opencontainers.image.version=${VERSION}" \
-        --annotation "org.opencontainers.image.source=https://github.com/componentized/logging.git" \
-        --annotation "org.opencontainers.image.revision=${REVISION}" \
-        --annotation "org.opencontainers.image.licenses=Apache-2.0" \
-        "${REPOSITORY}/${COMPONENT}:${TAG}" \
-        "lib/${FILE}"
+	@echo "::group::${FILE} -> ${REPOSITORY}/${COMPONENT}:${TAG}"
+	@DIGEST=$$( \
+		wkg oci push \
+			--annotation "org.opencontainers.image.title=${COMPONENT}" \
+			--annotation "org.opencontainers.image.description=${DESCRIPTION}" \
+			--annotation "org.opencontainers.image.version=${VERSION}" \
+			--annotation "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}.git" \
+			--annotation "org.opencontainers.image.revision=${REVISION}" \
+			--annotation "org.opencontainers.image.licenses=Apache-2.0" \
+			"${REPOSITORY}/${COMPONENT}:${TAG}" \
+			"lib/${FILE}" \
+			2>&1 \
+			| tee /dev/stderr \
+			| grep -o 'sha256:[a-f0-9]\{64\}' \
+	) ; \
+	cosign sign --yes "${REPOSITORY}/${COMPONENT}:${TAG}@$${DIGEST}"
+	@echo "::endgroup::"

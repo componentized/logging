@@ -3,17 +3,19 @@
 use chrono::DateTime;
 
 use exports::wasi::logging::logging::{Guest, Level};
-use wasi::clocks::wall_clock::now;
+use wasi::clocks::system_clock::now;
 
 #[macro_export]
 macro_rules! println {
     () => {
-        wasi::cli::stdout::get_stdout().blocking_write_and_flush("\n".as_bytes())
-            .expect("failed writing to stdout")
+        println!("\n");
     };
     ($($arg:tt)*) => {{
-        wasi::cli::stdout::get_stdout().blocking_write_and_flush((std::format!($($arg)*) + "\n").as_bytes())
-            .expect("failed writing to stdout")
+       wit_bindgen::block_on(async move{
+            let (mut writer, reader) = wit_stream::new();
+            wasi::cli::stdout::write_via_stream(reader);
+            writer.write_all((std::format!($($arg)*) + "\n").as_bytes().to_vec()).await;
+        });
     }};
 }
 

@@ -1,13 +1,5 @@
-package componentized:logging;
+package componentized:logging@0.3.0-dev;
 
-world levels {
+world imports {
     import wasi:logging/logging@0.1.0-draft;
-    import wasi:config/store@0.2.0-rc.1;
-    export wasi:logging/logging@0.1.0-draft;
-}
-
-world to-stdout {
-    import wasi:cli/stdout@0.3.0;
-    import wasi:clocks/system-clock@0.3.0;
-    export wasi:logging/logging@0.1.0-draft;
 }

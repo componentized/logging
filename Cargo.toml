@@ -3,6 +3,9 @@ resolver = "2"
 members = [
     "components/*",
 ]
+exclude = [
+    "components/wit",
+]
 
 [workspace.dependencies]
 wit-bindgen = "0.62.0"

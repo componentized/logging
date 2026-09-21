@@ -43,7 +43,7 @@ impl Guest for LoggingToStdout {
 }
 
 wit_bindgen::generate!({
-    path: "../../wit",
+    path: "../wit",
     world: "to-stdout",
     features: ["clocks-timezone"],
     generate_all

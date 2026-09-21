@@ -3,7 +3,7 @@ SHELL := /bin/bash
 export RUST_BACKTRACE ?= 1
 export WASMTIME_BACKTRACE_DETAILS ?= 1
 
-COMPONENTS = $(shell ls -1 components)
+COMPONENTS = $(sort $(notdir $(patsubst %/,%,$(dir $(wildcard  components/*/Cargo.toml)))))
 
 .PHONY: all
 all: components
@@ -15,7 +15,7 @@ clean:
 	rm -rf lib/*.wasm.md
 
 .PHONY: components
-components: $(foreach component,$(COMPONENTS),lib/$(component).wasm $(foreach component,$(COMPONENTS),lib/$(component).debug.wasm))
+components: lib/interface.wasm $(foreach component,$(COMPONENTS),lib/$(component).wasm lib/$(component).debug.wasm)
 
 define BUILD_COMPONENT
 
@@ -33,11 +33,17 @@ endef
 
 $(foreach component,$(COMPONENTS),$(eval $(call BUILD_COMPONENT,$(component))))
 
+lib/interface.wasm: wit/deps README.md
+	wkg build -o lib/interface.wasm
+	cp README.md lib/interface.wasm.md
 
 .PHONY: wit
-wit: wit/deps
+wit: wit/deps components/wit/deps
 
 wit/deps: wkg.toml $(shell find wit -type f -name "*.wit" -not -path "deps")
+	wkg wit fetch
+
+components/wit/deps: wit/deps components/wkg.toml $(shell find components/wit -type f -name "*.wit" -not -path "deps")
 	wkg wit fetch
 
 .PHONY: publish ## Publish each component in the lib directory

@@ -1,5 +1,3 @@
-#![no_main]
-
 use chrono::DateTime;
 
 use exports::wasi::logging::logging::{Guest, Level};

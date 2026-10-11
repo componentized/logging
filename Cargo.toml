@@ -1,11 +1,15 @@
 [workspace]
 resolver = "2"
 members = [
-    "components/*",
-]
-exclude = [
-    "components/wit",
+    "components/levels",
+    "components/to-stdout",
 ]
 
 [workspace.dependencies]
 wit-bindgen = "0.62.0"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = "debuginfo"

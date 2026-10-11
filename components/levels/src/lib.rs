@@ -1,5 +1,3 @@
-#![no_main]
-
 use std::collections::HashMap;
 
 use exports::wasi::logging::logging::{Guest, Level};

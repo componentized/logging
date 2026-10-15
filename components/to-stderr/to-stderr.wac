@@ -1,0 +1,11 @@
+package componentized:logging;
+
+import stderr: wasi:cli/stderr@0.3.0;
+
+let to-stdout = new local:to-stdout {
+    // write log statements to stderr instead of stdout
+    "wasi:cli/stdout@0.3.0": stderr,
+    ...
+};
+
+export to-stdout["wasi:logging/logging@0.1.0-draft"];

@@ -8,5 +8,10 @@ license = "Apache-2.0"
 crate-type = ["cdylib"]
 
 [dependencies]
-chrono = { git = "https://github.com/chronotope/chrono.git", branch = "0.5.x" }
+jiff = { workspace = true }
 wit-bindgen = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+wasmtime = { workspace = true }
+wasmtime-wasi = { workspace = true }

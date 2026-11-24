@@ -6,6 +6,10 @@ members = [
 ]
 
 [workspace.dependencies]
+jiff = { version = "1.0", default-features = false, features = ["std", "alloc"] }
+tokio = { version = "1", features = ["macros", "rt"] }
+wasmtime = "51.0.0"
+wasmtime-wasi = "51.0.0"
 wit-bindgen = "0.63.0"
 
 [profile.release]
